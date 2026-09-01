@@ -29,7 +29,10 @@ di competenze tecniche, con tre macro-ruoli a dashboard separate:
 | [`docs/05-user-flow.md`](docs/05-user-flow.md) | Flow end-to-end: registrazione → ricerca → contratto → time-sheet → fattura → pagamento |
 | [`docs/06-ui-ux-mobile.md`](docs/06-ui-ux-mobile.md) | Design system mobile, wireframe della **Rendicontazione Settimanale**, micro-interazioni, colori di stato |
 | [`docs/07-roadmap.md`](docs/07-roadmap.md) | Fasi di rilascio, MVP vs. V2, stime di effort e rischi |
-| [`db/schema.sql`](db/schema.sql) | DDL PostgreSQL eseguibile (Supabase-ready, con Row Level Security) |
+| [`docs/08-scelta-stack-php.md`](docs/08-scelta-stack-php.md) | **La scelta finale**: perché PHP 8 + MySQL su Aruba, cosa si conserva e cosa si perde |
+| [`DEPLOY-ARUBA.md`](DEPLOY-ARUBA.md) | Guida di installazione passo passo su Aruba Hosting Basic Linux |
+| [`db/schema.sql`](db/schema.sql) | DDL PostgreSQL di riferimento (dai documenti di architettura) |
+| [`migrations/`](migrations/) | Schema **effettivo** dell'applicazione: MySQL (produzione) e SQLite (sviluppo) |
 
 ## Sintesi della raccomandazione
 
@@ -55,3 +58,24 @@ come prototipo con vita attesa 12–18 mesi, e la rendicontazione va tenuta volu
 (una riga per settimana, niente griglia giornaliera).
 
 Il dettaglio è in [`docs/02`](docs/02-fattibilita-wordpress.md) e [`docs/03`](docs/03-stack-pwa.md).
+
+## Cosa è stato realizzato
+
+Dato il vincolo di hosting scelto — **Aruba Hosting Basic Linux, 10 €/anno**, che è hosting
+condiviso PHP/MySQL e non una macchina virtuale — lo stack Next.js + Supabase non era eseguibile.
+L'applicazione è stata quindi realizzata come **PWA in PHP 8.1 + MySQL, senza Composer e senza build
+step**, conservando le tre garanzie che contano davvero sulla rendicontazione: unicità della
+settimana, immutabilità del dato approvato e calcolo degli importi solo lato server. Le ragioni, i
+compromessi accettati e il percorso di uscita verso un VPS sono in
+[`docs/08`](docs/08-scelta-stack-php.md).
+
+```bash
+cp config/config.example.php config/config.local.php   # sviluppo: driver 'sqlite'
+php bin/migrate.php --fresh
+php bin/seed.php --demo --admin=tuo@indirizzo.it --password='...'
+php -S 127.0.0.1:8000 -t public public/index.php
+```
+
+Per la produzione: `php bin/package.php` genera l'archivio da caricare via FTP, e
+[`DEPLOY-ARUBA.md`](DEPLOY-ARUBA.md) elenca i passi sul pannello Aruba (versione PHP, database,
+schema da phpMyAdmin, cron giornaliero) e i limiti noti del piano.
