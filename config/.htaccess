@@ -1,0 +1,4 @@
+# I documenti non devono MAI essere serviti direttamente da Apache:
+# il download passa sempre dal controllo dei permessi in PHP.
+Require all denied
+Deny from all
