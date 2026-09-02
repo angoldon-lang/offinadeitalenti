@@ -24,10 +24,25 @@ $q = static fn (?string $v): string => $v === null ? 'NULL' : "'" . str_replace(
 
 // ---- 1. schema e trigger ----------------------------------------------------
 $source     = (string) file_get_contents(dirname(__DIR__) . '/migrations/mysql/001_schema.sql');
+// Si divide SOLO su righe che sono esattamente il marcatore, e si scartano
+// i blocchi di soli commenti: la stringa marcatore puo' comparire dentro un
+// commento, e spezzarla li' produrrebbe SQL non valido.
 $statements = array_values(array_filter(
-    array_map('trim', explode('-- ;; --', $source)),
-    static fn (string $s): bool => $s !== ''
+    array_map('trim', (array) preg_split('/^--\s*;;\s*--\s*$/m', $source)),
+    static fn (string $s): bool => $s !== '' && !preg_match('/^(--[^\n]*\n?)+$/', $s)
 ));
+
+// Ogni blocco deve iniziare con uno statement SQL una volta tolti i commenti
+// iniziali. Se non e' cosi' il file sorgente e' stato diviso male: meglio
+// fermarsi qui che consegnare un file che fallisce in phpMyAdmin.
+foreach ($statements as $sql) {
+    $firstCode = trim((string) preg_replace('/^(\s*--[^\n]*\n)+/', '', $sql));
+    if (!preg_match('/^(CREATE|INSERT|ALTER|DROP|SET)\b/i', $firstCode)) {
+        fwrite(STDERR, "Blocco SQL non valido, generazione interrotta:\n"
+            . substr($firstCode, 0, 160) . "\n");
+        exit(1);
+    }
+}
 
 $tables   = [];
 $triggers = [];

@@ -38,8 +38,10 @@ if ($files === []) {
 $pdo = Database::pdo();
 foreach ($files as $file) {
     echo '→ ' . basename($file) . "\n";
+    // Si divide SOLO su righe che sono esattamente il marcatore: la stringa
+    // puo' comparire anche dentro un commento, e spezzarla li' romperebbe il file.
     $statements = array_filter(
-        array_map('trim', explode('-- ;; --', (string) file_get_contents($file))),
+        array_map('trim', (array) preg_split('/^--\s*;;\s*--\s*$/m', (string) file_get_contents($file))),
         static fn (string $s): bool => $s !== '' && !preg_match('/^(--[^\n]*\n?)+$/', $s)
     );
 

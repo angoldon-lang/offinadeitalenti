@@ -1,5 +1,5 @@
 -- Officina dei Talenti — Passo 2.2: trigger trg_tsd_locked_ins
--- Generato il 02/09/2026 09:56
+-- Generato il 02/09/2026 23:18
 -- Incolla in phpMyAdmin (scheda SQL) e premi Esegui.
 
 -- IMPORTANTE: incolla SOLO questo blocco, da solo, e premi Esegui.

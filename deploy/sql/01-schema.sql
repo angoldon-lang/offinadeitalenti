@@ -1,15 +1,14 @@
 -- Officina dei Talenti — Passo 1: tabelle
--- Generato il 02/09/2026 09:56
+-- Generato il 02/09/2026 23:18
 -- Incolla in phpMyAdmin (scheda SQL) e premi Esegui.
 
 -- =============================================================================
 -- Officina dei Talenti - schema MySQL 8 / MariaDB 10.4+
 -- Target: Aruba Hosting Basic Linux (database MySQL condiviso)
 --
--- Gli statement sono separati dalla riga marcatore ";
-
-" perche' i
--- trigger contengono punti e virgola al loro interno.
+-- Gli statement sono separati da una riga marcatore dedicata, perche' i
+-- trigger contengono punti e virgola al loro interno e non si possono
+-- dividere sul ";".
 -- Su MySQL 5.7 i CHECK vengono ignorati dal motore: i vincoli che contano
 -- davvero (UNIQUE settimanale e immutabilita' del time-sheet approvato) sono
 -- affidati a indici e trigger, supportati da tutte le versioni.
