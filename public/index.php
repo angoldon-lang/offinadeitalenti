@@ -12,7 +12,8 @@ $appRoot = is_file(dirname(__DIR__) . '/src/bootstrap.php') ? dirname(__DIR__) :
 require $appRoot . '/src/bootstrap.php';
 
 use App\Controller\{AdminController, AuthController, ClientController, ContractController,
-                    HomeController, InvoiceController, OffererController, TimesheetController};
+                    HomeController, InvoiceController, OffererController, ProfileController,
+                    TimesheetController};
 use App\Core\{Auth, Request, Response, Router, View};
 
 // Intestazioni di sicurezza di base (su Aruba non c'e' un reverse proxy che le aggiunga).
@@ -39,6 +40,9 @@ $ALL = ['OFFERENTE', 'RICHIEDENTE', 'RESOURCE_USER', 'ADMIN'];
 
 $router->get('/in-attivazione', [AuthController::class, 'pending'], $ALL);
 $router->get('/notifiche',      [HomeController::class, 'notifications'], $ALL);
+$router->get('/profilo',        [ProfileController::class, 'show'], $ALL);
+$router->post('/profilo',       [ProfileController::class, 'updateProfile'], $ALL);
+$router->post('/profilo/password', [ProfileController::class, 'updatePassword'], $ALL);
 
 // ---- area OFFERENTE ---------------------------------------------------------
 $router->group(['OFFERENTE'], function (Router $r): void {

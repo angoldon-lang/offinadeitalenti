@@ -1,8 +1,14 @@
+-- Officina dei Talenti — Passo 1: tabelle
+-- Generato il 02/09/2026 09:52
+-- Incolla in phpMyAdmin (scheda SQL) e premi Esegui.
+
 -- =============================================================================
 -- Officina dei Talenti - schema MySQL 8 / MariaDB 10.4+
 -- Target: Aruba Hosting Basic Linux (database MySQL condiviso)
 --
--- Gli statement sono separati dalla riga marcatore "-- ;; --" perche' i
+-- Gli statement sono separati dalla riga marcatore ";
+
+" perche' i
 -- trigger contengono punti e virgola al loro interno.
 -- Su MySQL 5.7 i CHECK vengono ignorati dal motore: i vincoli che contano
 -- davvero (UNIQUE settimanale e immutabilita' del time-sheet approvato) sono
@@ -13,9 +19,9 @@ CREATE TABLE runtime_flags (
   id             TINYINT      NOT NULL PRIMARY KEY,
   admin_override TINYINT      NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 INSERT INTO runtime_flags (id, admin_override) VALUES (1, 0);
--- ;; --
+
 CREATE TABLE organizations (
   id                    CHAR(36)     NOT NULL PRIMARY KEY,
   type                  VARCHAR(16)  NOT NULL,
@@ -41,7 +47,7 @@ CREATE TABLE organizations (
   CONSTRAINT chk_org_type   CHECK (type IN ('OFFERENTE','RICHIEDENTE')),
   CONSTRAINT chk_org_status CHECK (status IN ('PENDING_APPROVAL','ACTIVE','GRACE','EXPIRED','SUSPENDED'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE account_extensions (
   id              CHAR(36)     NOT NULL PRIMARY KEY,
   organization_id CHAR(36)     NOT NULL,
@@ -54,7 +60,7 @@ CREATE TABLE account_extensions (
   KEY idx_ext_org (organization_id, created_at),
   CONSTRAINT fk_ext_org FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE users (
   id              CHAR(36)     NOT NULL PRIMARY KEY,
   organization_id CHAR(36)     NULL,
@@ -74,7 +80,7 @@ CREATE TABLE users (
   CONSTRAINT fk_users_org FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
   CONSTRAINT chk_users_role CHECK (platform_role IN ('OFFERENTE','RICHIEDENTE','RESOURCE_USER','ADMIN'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE skills (
   id         CHAR(36)     NOT NULL PRIMARY KEY,
   slug       VARCHAR(80)  NOT NULL,
@@ -85,7 +91,7 @@ CREATE TABLE skills (
   KEY idx_skill_cat (category, name),
   CONSTRAINT chk_skill_cat CHECK (category IN ('HARD','SOFT'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE resources (
   id                 CHAR(36)      NOT NULL PRIMARY KEY,
   organization_id    CHAR(36)      NOT NULL,
@@ -122,7 +128,7 @@ CREATE TABLE resources (
   CONSTRAINT chk_res_mode CHECK (work_mode IN ('ONSITE','REMOTO','IBRIDO')),
   CONSTRAINT chk_res_op   CHECK (operational_status IN ('ATTIVA','OCCUPATA'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE resource_skills (
   resource_id CHAR(36) NOT NULL,
   skill_id    CHAR(36) NOT NULL,
@@ -133,7 +139,7 @@ CREATE TABLE resource_skills (
   CONSTRAINT fk_rs_res   FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE,
   CONSTRAINT fk_rs_skill FOREIGN KEY (skill_id)    REFERENCES skills(id)    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE resource_requests (
   id                 CHAR(36)      NOT NULL PRIMARY KEY,
   resource_id        CHAR(36)      NOT NULL,
@@ -155,7 +161,7 @@ CREATE TABLE resource_requests (
   CONSTRAINT fk_req_res    FOREIGN KEY (resource_id)   REFERENCES resources(id)     ON DELETE CASCADE,
   CONSTRAINT fk_req_client FOREIGN KEY (client_org_id) REFERENCES organizations(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE contracts (
   id                      CHAR(36)      NOT NULL PRIMARY KEY,
   code                    VARCHAR(30)   NOT NULL,
@@ -185,7 +191,7 @@ CREATE TABLE contracts (
   CONSTRAINT chk_con_dates   CHECK (end_date >= start_date),
   CONSTRAINT chk_con_rate    CHECK (agreed_rate > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE contract_documents (
   id          CHAR(36)     NOT NULL PRIMARY KEY,
   contract_id CHAR(36)     NOT NULL,
@@ -202,7 +208,7 @@ CREATE TABLE contract_documents (
   UNIQUE KEY uq_doc_version (contract_id, doc_type, version),
   CONSTRAINT fk_doc_contract FOREIGN KEY (contract_id) REFERENCES contracts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE invoices (
   id              CHAR(36)      NOT NULL PRIMARY KEY,
   number          VARCHAR(40)   NULL,
@@ -232,7 +238,7 @@ CREATE TABLE invoices (
   CONSTRAINT fk_inv_contract FOREIGN KEY (contract_id)     REFERENCES contracts(id) ON DELETE SET NULL,
   CONSTRAINT chk_inv_period  CHECK (period_end >= period_start)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE timesheets (
   id               CHAR(36)      NOT NULL PRIMARY KEY,
   contract_id      CHAR(36)      NOT NULL,
@@ -264,7 +270,7 @@ CREATE TABLE timesheets (
   CONSTRAINT fk_ts_invoice  FOREIGN KEY (invoice_id)  REFERENCES invoices(id)  ON DELETE SET NULL,
   CONSTRAINT chk_ts_status  CHECK (status IN ('DRAFT','SUBMITTED','APPROVED','REJECTED','INVOICED','PAID'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE timesheet_days (
   id           CHAR(36)     NOT NULL PRIMARY KEY,
   timesheet_id CHAR(36)     NOT NULL,
@@ -277,7 +283,7 @@ CREATE TABLE timesheet_days (
   CONSTRAINT fk_tsd_ts FOREIGN KEY (timesheet_id) REFERENCES timesheets(id) ON DELETE CASCADE,
   CONSTRAINT chk_tsd_qty CHECK (quantity >= 0 AND quantity <= 24)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE timesheet_events (
   id           CHAR(36)    NOT NULL PRIMARY KEY,
   timesheet_id CHAR(36)    NOT NULL,
@@ -290,7 +296,7 @@ CREATE TABLE timesheet_events (
   KEY idx_tse_ts (timesheet_id, created_at),
   CONSTRAINT fk_tse_ts FOREIGN KEY (timesheet_id) REFERENCES timesheets(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE notifications (
   id         CHAR(36)     NOT NULL PRIMARY KEY,
   user_id    CHAR(36)     NOT NULL,
@@ -303,7 +309,7 @@ CREATE TABLE notifications (
   KEY idx_notif_user (user_id, read_at, created_at),
   CONSTRAINT fk_notif_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
+
 CREATE TABLE audit_log (
   id          BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
   actor_id    CHAR(36)     NULL,
@@ -317,45 +323,3 @@ CREATE TABLE audit_log (
   created_at  DATETIME     NOT NULL,
   KEY idx_audit_entity (entity_type, entity_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- ;; --
--- IMMUTABILITA' DEL DATO APPROVATO ------------------------------------------
--- Un time-sheet approvato e' la base di una fattura: non deve essere
--- modificabile da nessun percorso applicativo. L'unico varco e' il flag
--- runtime_flags.admin_override, che l'app alza solo per l'admin e traccia.
-CREATE TRIGGER trg_ts_immutable BEFORE UPDATE ON timesheets
-FOR EACH ROW
-BEGIN
-  IF OLD.status IN ('APPROVED','INVOICED','PAID')
-     AND (SELECT admin_override FROM runtime_flags WHERE id = 1) = 0 THEN
-    SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Time-sheet approvato: modifica non consentita senza override amministrativo.';
-  END IF;
-END;
--- ;; --
--- Le giornate seguono lo stato della settimana: scrivibili solo in bozza.
-CREATE TRIGGER trg_tsd_locked_ins BEFORE INSERT ON timesheet_days
-FOR EACH ROW
-BEGIN
-  IF (SELECT status FROM timesheets WHERE id = NEW.timesheet_id) <> 'DRAFT'
-     AND (SELECT admin_override FROM runtime_flags WHERE id = 1) = 0 THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La settimana non e'' in bozza: giornate non modificabili.';
-  END IF;
-END;
--- ;; --
-CREATE TRIGGER trg_tsd_locked_upd BEFORE UPDATE ON timesheet_days
-FOR EACH ROW
-BEGIN
-  IF (SELECT status FROM timesheets WHERE id = NEW.timesheet_id) <> 'DRAFT'
-     AND (SELECT admin_override FROM runtime_flags WHERE id = 1) = 0 THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La settimana non e'' in bozza: giornate non modificabili.';
-  END IF;
-END;
--- ;; --
-CREATE TRIGGER trg_tsd_locked_del BEFORE DELETE ON timesheet_days
-FOR EACH ROW
-BEGIN
-  IF (SELECT status FROM timesheets WHERE id = OLD.timesheet_id) <> 'DRAFT'
-     AND (SELECT admin_override FROM runtime_flags WHERE id = 1) = 0 THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La settimana non e'' in bozza: giornate non cancellabili.';
-  END IF;
-END;

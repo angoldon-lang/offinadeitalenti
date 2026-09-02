@@ -54,6 +54,7 @@ $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
     <a class="iconbtn" href="<?= View::url('/notifiche') ?>" aria-label="Notifiche">
       🔔<?php if ($unread > 0): ?><span class="dot"><?= (int) $unread ?></span><?php endif; ?>
     </a>
+    <a class="iconbtn" href="<?= View::url('/profilo') ?>" aria-label="Il mio profilo">👤</a>
     <a class="iconbtn" href="<?= View::url('/logout') ?>" aria-label="Esci">⏻</a>
   </div>
 </header>
