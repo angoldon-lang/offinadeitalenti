@@ -6,7 +6,9 @@ declare(strict_types=1);
  *   php bin/make-deploy-sql.php
  *
  * Produce in deploy/sql/:
- *   01-schema.sql        tutte le tabelle (un solo incolla)
+ *   00-tutto.sql         tabelle + competenze in un unico incolla (consigliato)
+ *   01-schema.sql        solo le tabelle
+ *   99-verifica.sql      dice a che punto sei, anche a database vuoto
  *   02-trigger-N.sql     un trigger per file: phpMyAdmin non ne digerisce piu' d'uno insieme
  *   03-skills.sql        tassonomia delle competenze
  *
@@ -98,6 +100,34 @@ foreach ($skills as $category => $names) {
 file_put_contents($dir . '/03-skills.sql',
     sprintf($header, 'Passo 3: competenze selezionabili') .
     "INSERT INTO skills (id, slug, name, category, is_active) VALUES\n" . implode(",\n", $rows) . ";\n");
+
+// ---- file unico schema + competenze ----------------------------------------
+// Meno passi, meno ordine da rispettare: chi si ferma a meta' non si ritrova
+// con le tabelle senza le competenze (o viceversa).
+$allInOne = sprintf($header, 'Passo unico: tabelle + competenze')
+    . "-- Contiene lo stesso contenuto di 01-schema.sql e 03-skills.sql.\n"
+    . "-- Usa QUESTO file, oppure quei due separati: non entrambi.\n\n"
+    . implode("\n\n", $tables) . "\n\n"
+    . "INSERT INTO skills (id, slug, name, category, is_active) VALUES\n" . implode(",\n", $rows) . ";\n";
+file_put_contents($dir . '/00-tutto.sql', $allInOne);
+
+// ---- verifica dello stato ---------------------------------------------------
+file_put_contents($dir . '/99-verifica.sql',
+    sprintf($header, 'Verifica: cosa esiste davvero nel database') .
+    "-- Esegui questa query per sapere a che punto sei. Funziona anche se il\n" .
+    "-- database e' completamente vuoto.\n\n" .
+    "SELECT\n" .
+    "  (SELECT COUNT(*) FROM information_schema.tables\n" .
+    "     WHERE table_schema = DATABASE())                                AS tabelle_trovate,\n" .
+    "  16                                                                 AS tabelle_attese,\n" .
+    "  (SELECT COUNT(*) FROM information_schema.triggers\n" .
+    "     WHERE trigger_schema = DATABASE())                              AS trigger_trovati,\n" .
+    "  4                                                                  AS trigger_attesi,\n" .
+    "  (SELECT COUNT(*) FROM information_schema.tables\n" .
+    "     WHERE table_schema = DATABASE() AND table_name = 'skills')      AS tabella_skills_esiste;\n\n" .
+    "-- Se tabella_skills_esiste vale 1, questa dice quante competenze ci sono\n" .
+    "-- (attese: 42). Se vale 0, salta questa riga: il passo 1 non e' andato.\n" .
+    "-- SELECT COUNT(*) AS competenze FROM skills;\n");
 
 // L'amministratore NON si crea da SQL: la pagina /installazione lo crea dal
 // browser e si disattiva da sola. Cosi' nessuna password passa da un file.

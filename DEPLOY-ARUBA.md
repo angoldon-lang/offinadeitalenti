@@ -148,12 +148,20 @@ nascosti*.
 Apri **phpMyAdmin** dal pannello Aruba e seleziona il tuo database a sinistra.
 Tutti i file da incollare sono nella cartella **`deploy/sql/`** del progetto.
 
-### Passo 4.1 — Le tabelle
+### Passo 4.1 — Tabelle e competenze
 
-Apri `deploy/sql/01-schema.sql` con un editor di testo, **seleziona tutto, copia**.
+Apri `deploy/sql/00-tutto.sql` con un editor di testo, **seleziona tutto, copia**.
 In phpMyAdmin → scheda **SQL** → incolla → **Esegui**.
 
 ✅ Deve comparire "query eseguita correttamente". A sinistra vedrai **16 tabelle**.
+
+> Questo file contiene sia le tabelle sia le 42 competenze: un solo incolla, un ordine in meno da
+> sbagliare. Se preferisci i due passaggi separati usa `01-schema.sql` e poi `03-skills.sql` —
+> ma non entrambe le strade, altrimenti le competenze verrebbero inserite due volte.
+
+**Se qualcosa va storto, prima di proseguire** apri `99-verifica.sql`, incollalo ed esegui: ti dice
+quante tabelle e quanti trigger esistono davvero. Funziona anche a database completamente vuoto, e
+distingue "non ho ancora fatto niente" da "ho fatto metà lavoro".
 
 ### Passo 4.2 — I quattro trigger, uno alla volta
 
@@ -175,10 +183,15 @@ Per **ciascuno** dei file `02-trigger-1.sql`, `02-trigger-2.sql`, `02-trigger-3.
 > essi l'applicazione funziona lo stesso, ma perde la garanzia che rende i rendiconti
 > attendibili per la fatturazione. Non saltarli.
 
-### Passo 4.3 — Le competenze
+### Passo 4.3 — Controllo finale
 
-Apri `deploy/sql/03-skills.sql` → copia → incolla in phpMyAdmin → **Esegui**.
-Inserisce le 42 competenze selezionabili (33 tecniche + 9 trasversali).
+Apri `deploy/sql/99-verifica.sql` → copia → incolla → **Esegui**. Devi leggere:
+
+| tabelle_trovate | tabelle_attese | trigger_trovati | trigger_attesi | tabella_skills_esiste |
+|---|---|---|---|---|
+| 16 | 16 | 4 | 4 | 1 |
+
+Se un numero non torna, sai esattamente quale passo ripetere.
 
 > L'utente amministratore **non** si crea da SQL: lo fai dal browser al passo 5.1, così la tua
 > password non transita da nessun file.
@@ -276,6 +289,8 @@ L'ordine conta: ogni passo abilita il successivo.
 | Il caricamento dei PDF fallisce | Permessi cartella | `storage/documents` a 775 |
 | "La settimana non è in bozza" | Comportamento corretto | Il time-sheet è già stato inviato o approvato |
 | Il file SQL dà errore sui trigger | Incollati insieme | Uno per volta, passo 4.2 |
+| `#1146 Table '...skills' doesn't exist` | Il passo 4.1 non è andato a buon fine: il database è vuoto | Esegui `99-verifica.sql`, poi ripeti il passo 4.1 |
+| `#1064` vicino a un commento | File scaricato prima della correzione del 2 settembre | Riscarica `deploy/sql/` |
 
 ---
 

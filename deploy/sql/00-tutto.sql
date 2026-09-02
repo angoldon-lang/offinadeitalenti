@@ -1,6 +1,9 @@
--- Officina dei Talenti — Passo 1: tabelle
+-- Officina dei Talenti — Passo unico: tabelle + competenze
 -- Generato il 02/09/2026 23:31
 -- Incolla in phpMyAdmin (scheda SQL) e premi Esegui.
+
+-- Contiene lo stesso contenuto di 01-schema.sql e 03-skills.sql.
+-- Usa QUESTO file, oppure quei due separati: non entrambi.
 
 -- =============================================================================
 -- Officina dei Talenti - schema MySQL 8 / MariaDB 10.4+
@@ -322,3 +325,47 @@ CREATE TABLE audit_log (
   created_at  DATETIME     NOT NULL,
   KEY idx_audit_entity (entity_type, entity_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO skills (id, slug, name, category, is_active) VALUES
+('77c35d6b-7dac-4390-970a-9942435e18c9', 'php', 'PHP', 'HARD', 1),
+('fb260a60-f2cf-4968-893d-c56513e5024b', 'javascript', 'JavaScript', 'HARD', 1),
+('41d2cb6a-1bd0-40b2-b80c-72ed6cdaa577', 'typescript', 'TypeScript', 'HARD', 1),
+('eb9b7bf0-93d6-4c3c-a6b4-bd266fa46323', 'react', 'React', 'HARD', 1),
+('b1b7cb27-17dc-4d73-bd54-7e45b7b7a8a5', 'vue', 'Vue', 'HARD', 1),
+('ea21ba77-311b-4187-aece-7bdf9345d532', 'angular', 'Angular', 'HARD', 1),
+('255aa61e-64c3-4c5b-b479-9cab4a35632d', 'node-js', 'Node.js', 'HARD', 1),
+('d325980b-c7a6-405a-a1d2-0efbf16330a3', 'python', 'Python', 'HARD', 1),
+('ee445b0b-3b4d-4ed3-a4e7-d81debc0b24f', 'java', 'Java', 'HARD', 1),
+('888d0e14-c5fb-47c6-b36a-8e7fa4537468', 'c-net', 'C#/.NET', 'HARD', 1),
+('483e731a-414b-4717-b5f8-9b75b05b3f57', 'go', 'Go', 'HARD', 1),
+('33c52945-4b54-4c42-8fb4-f41d4e9f51b2', 'sql', 'SQL', 'HARD', 1),
+('3f6a37b3-2b54-45e7-b0a5-f4cd936e1cc8', 'postgresql', 'PostgreSQL', 'HARD', 1),
+('1c83edd5-78fe-4460-82d0-5f34353d2a67', 'mysql', 'MySQL', 'HARD', 1),
+('41223036-f238-47c0-b964-63b2e9230714', 'mongodb', 'MongoDB', 'HARD', 1),
+('2cdcdf16-64b5-4331-8842-6983de08076b', 'docker', 'Docker', 'HARD', 1),
+('147e01ed-94d0-4523-8249-f8927f0d05a4', 'kubernetes', 'Kubernetes', 'HARD', 1),
+('51761b7d-dbe0-4bb9-8647-5eae61aa7423', 'aws', 'AWS', 'HARD', 1),
+('f53f3f97-a864-43c7-aef0-66949d24a3e7', 'azure', 'Azure', 'HARD', 1),
+('02a1ea33-5ac0-4526-a5b3-40b16e200d63', 'terraform', 'Terraform', 'HARD', 1),
+('6e7ec814-9b7d-4de6-b5fe-4182b83d59d1', 'ci-cd', 'CI/CD', 'HARD', 1),
+('d3c51d1a-8b57-478e-8fb9-517dad9b891f', 'linux', 'Linux', 'HARD', 1),
+('063bb61e-f26b-4f69-9926-e4edf7f6c14e', 'cybersecurity', 'Cybersecurity', 'HARD', 1),
+('0ab6cb90-b1c2-4a2e-b462-b4531ddd1b12', 'power-bi', 'Power BI', 'HARD', 1),
+('37a0fb43-1313-4210-907c-f6aec31dfaed', 'sap', 'SAP', 'HARD', 1),
+('67066718-b376-46bd-997f-c9b68fd940cc', 'salesforce', 'Salesforce', 'HARD', 1),
+('90ce0bbd-9801-489b-ba44-7cd50a52f3d2', 'android', 'Android', 'HARD', 1),
+('dd462cf1-ff72-4df7-a3a8-b29048a5ee96', 'ios', 'iOS', 'HARD', 1),
+('c717769c-64d0-4e2d-87e6-6acbe6110287', 'flutter', 'Flutter', 'HARD', 1),
+('e9d0e1bf-7250-4c84-be0d-db5220b6b4b6', 'ux-ui-design', 'UX/UI Design', 'HARD', 1),
+('ff138561-164f-4fc9-8d3e-3a952d43590e', 'project-management', 'Project Management', 'HARD', 1),
+('4c6c4ccc-e0ad-4ce3-9efa-a68ec28d955d', 'data-engineering', 'Data Engineering', 'HARD', 1),
+('21d124bd-b6b6-4ebf-970c-43a9152d7beb', 'machine-learning', 'Machine Learning', 'HARD', 1),
+('52e506f8-b751-4930-abc6-7b54db46816f', 'comunicazione', 'Comunicazione', 'SOFT', 1),
+('9a5805cd-db5c-4f5e-9fca-d18ba93d4dfd', 'problem-solving', 'Problem solving', 'SOFT', 1),
+('20f975dd-6f15-439a-9242-a8ffc792bca0', 'lavoro-in-team', 'Lavoro in team', 'SOFT', 1),
+('79cdd542-999f-426f-9fe3-aa61b7fa1032', 'autonomia', 'Autonomia', 'SOFT', 1),
+('0c15c128-39af-42b4-ae57-63a00dc625b4', 'leadership', 'Leadership', 'SOFT', 1),
+('7c687291-924b-4316-8252-4897cb05cfff', 'gestione-del-cliente', 'Gestione del cliente', 'SOFT', 1),
+('dbf59f32-1cd9-44b0-b066-3a6acd57edfa', 'precisione', 'Precisione', 'SOFT', 1),
+('7a0b13ab-6b3a-42f5-a0f8-ab91ea7dc0f2', 'adattabilita-', 'Adattabilita''', 'SOFT', 1),
+('02cae71d-d0bd-4ddd-a377-e616d8d89586', 'inglese-fluente', 'Inglese fluente', 'SOFT', 1);
