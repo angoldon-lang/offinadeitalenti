@@ -1,5 +1,5 @@
 -- Officina dei Talenti — Passo 1: tabelle
--- Generato il 02/09/2026 09:52
+-- Generato il 02/09/2026 09:56
 -- Incolla in phpMyAdmin (scheda SQL) e premi Esegui.
 
 -- =============================================================================

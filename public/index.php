@@ -13,7 +13,7 @@ require $appRoot . '/src/bootstrap.php';
 
 use App\Controller\{AdminController, AuthController, ClientController, ContractController,
                     HomeController, InvoiceController, OffererController, ProfileController,
-                    TimesheetController};
+                    SetupController, TimesheetController};
 use App\Core\{Auth, Request, Response, Router, View};
 
 // Intestazioni di sicurezza di base (su Aruba non c'e' un reverse proxy che le aggiunga).
@@ -35,6 +35,10 @@ $router->post('/login',      [AuthController::class, 'login']);
 $router->get('/registrati',  [AuthController::class, 'showRegister']);
 $router->post('/registrati', [AuthController::class, 'register']);
 $router->get('/logout',      [AuthController::class, 'logout']);
+
+// Installazione: aperta solo finche' non esiste un amministratore, poi 404.
+$router->get('/installazione',  [SetupController::class, 'show']);
+$router->post('/installazione', [SetupController::class, 'create']);
 
 $ALL = ['OFFERENTE', 'RICHIEDENTE', 'RESOURCE_USER', 'ADMIN'];
 

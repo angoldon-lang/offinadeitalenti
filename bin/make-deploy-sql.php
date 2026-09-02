@@ -3,35 +3,19 @@ declare(strict_types=1);
 /**
  * Prepara i file SQL da incollare in phpMyAdmin su Aruba (niente SSH, niente CLI).
  *
- *   php bin/make-deploy-sql.php --admin=tua@email.it [--password='...']
+ *   php bin/make-deploy-sql.php
  *
  * Produce in deploy/sql/:
  *   01-schema.sql        tutte le tabelle (un solo incolla)
  *   02-trigger-N.sql     un trigger per file: phpMyAdmin non ne digerisce piu' d'uno insieme
  *   03-skills.sql        tassonomia delle competenze
- *   04-admin.sql         utente amministratore con hash gia' calcolato
+ *
+ * L'utente amministratore NON e' incluso: si crea da /installazione, cosi' la
+ * password non transita da nessun file.
  */
 require dirname(__DIR__) . '/src/bootstrap.php';
 
 use App\Core\Database as DB;
-
-$opts  = getopt('', ['admin::', 'password::']);
-$email = strtolower(trim((string) ($opts['admin'] ?? 'admin@tallerconsulting.it')));
-$pass  = (string) ($opts['password'] ?? '');
-
-if ($pass === '') {
-    // Password robusta e leggibile: 4 gruppi separati, niente caratteri ambigui.
-    $alphabet = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    $groups   = [];
-    for ($g = 0; $g < 4; $g++) {
-        $s = '';
-        for ($i = 0; $i < 5; $i++) {
-            $s .= $alphabet[random_int(0, strlen($alphabet) - 1)];
-        }
-        $groups[] = $s;
-    }
-    $pass = implode('-', $groups);
-}
 
 $dir = dirname(__DIR__) . '/deploy/sql';
 @mkdir($dir, 0755, true);
@@ -100,22 +84,11 @@ file_put_contents($dir . '/03-skills.sql',
     sprintf($header, 'Passo 3: competenze selezionabili') .
     "INSERT INTO skills (id, slug, name, category, is_active) VALUES\n" . implode(",\n", $rows) . ";\n");
 
-// ---- 3. amministratore ------------------------------------------------------
-$now  = DB::now();
-$hash = password_hash($pass, PASSWORD_DEFAULT);
-
-file_put_contents($dir . '/04-admin.sql',
-    sprintf($header, 'Passo 4: utente amministratore') .
-    "-- Email:    {$email}\n-- Password: {$pass}\n" .
-    "-- Cambiala dopo il primo accesso e cancella questo file dal server.\n\n" .
-    sprintf(
-        "INSERT INTO users (id, organization_id, email, password_hash, full_name, platform_role, org_role, is_active, created_at, updated_at)\n"
-        . "VALUES (%s, NULL, %s, %s, %s, 'ADMIN', 'OWNER', 1, %s, %s);\n",
-        $q(DB::uuid()), $q($email), $q($hash), $q('Amministratore'), $q($now), $q($now)
-    ));
+// L'amministratore NON si crea da SQL: la pagina /installazione lo crea dal
+// browser e si disattiva da sola. Cosi' nessuna password passa da un file.
 
 echo "File pronti in deploy/sql/:\n";
 foreach (glob($dir . '/*.sql') ?: [] as $f) {
     printf("  %-22s %5d byte\n", basename($f), filesize($f));
 }
-echo "\nCredenziali amministratore\n  email:    {$email}\n  password: {$pass}\n";
+echo "\nL'amministratore si crea dal browser su /installazione dopo aver caricato i file.\n";

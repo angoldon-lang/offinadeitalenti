@@ -180,26 +180,34 @@ Per **ciascuno** dei file `02-trigger-1.sql`, `02-trigger-2.sql`, `02-trigger-3.
 Apri `deploy/sql/03-skills.sql` → copia → incolla in phpMyAdmin → **Esegui**.
 Inserisce le 42 competenze selezionabili (33 tecniche + 9 trasversali).
 
-### Passo 4.4 — L'utente amministratore
-
-Apri `deploy/sql/04-admin.sql`. In cima trovi email e password in chiaro.
-Copia **tutto il file** → incolla in phpMyAdmin → **Esegui**.
-
-📝 Annota le credenziali, poi **cancella il file dal tuo computer**.
+> L'utente amministratore **non** si crea da SQL: lo fai dal browser al passo 5.1, così la tua
+> password non transita da nessun file.
 
 ---
 
 ## Fase 5 — Primo accesso (10 minuti)
 
-### Passo 5.1 — Entrare
+### Passo 5.1 — Creare l'amministratore
 
-Apri `https://tallerconsulting.it/login` e accedi con le credenziali del passo 4.4.
-Devi atterrare sul **back-office**.
+Apri **`https://tallerconsulting.it/installazione`**.
 
-### Passo 5.2 — Cambiare subito la password
+Se il database è configurato correttamente vedi un modulo: nome, email e password (almeno 12
+caratteri). Compila e conferma. Vieni portato direttamente nel back-office, già autenticato.
 
-In alto a destra, icona **👤** → sezione *Cambia password*.
-La password generata era pensata per il file SQL, non per l'uso quotidiano.
+La pagina conferma anche quante competenze ha trovato: se dice che la tabella è vuota, torna al
+passo 4.3.
+
+> 🔒 Da quel momento `/installazione` risponde **404** e resta inutilizzabile, perché esiste già un
+> amministratore. Non c'è nessun file da ricordarsi di cancellare dal server — la classica
+> dimenticanza che lascia aperta una porta.
+
+Se la pagina mostra un errore di connessione al database, il problema è nel passo 2.2: ricontrolla i
+quattro valori.
+
+### Passo 5.2 — Da qui in avanti
+
+L'accesso normale è `https://tallerconsulting.it/login`.
+La password si cambia in qualsiasi momento dall'icona **👤** in alto a destra.
 
 ### Passo 5.3 — Il cron giornaliero
 
@@ -264,6 +272,7 @@ L'ordine conta: ogni passo abilita il successivo.
 | Errore di connessione al database | Credenziali sbagliate | Ricontrolla i 4 valori del passo 1.4 |
 | Errore 500 su ogni pagina | Versione PHP troppo vecchia | Passo 1.2, imposta 8.1+ |
 | Errore 404 su ogni pagina tranne la home | `mod_rewrite` o `.htaccess` mancante | Verifica che `.htaccess` sia stato caricato (file nascosto) |
+| `/installazione` dà 404 | Un amministratore esiste già | Vai su `/login`; se hai perso la password, reimposta l'hash da phpMyAdmin |
 | Il caricamento dei PDF fallisce | Permessi cartella | `storage/documents` a 775 |
 | "La settimana non è in bozza" | Comportamento corretto | Il time-sheet è già stato inviato o approvato |
 | Il file SQL dà errore sui trigger | Incollati insieme | Uno per volta, passo 4.2 |
@@ -280,7 +289,7 @@ Detto chiaramente, così non lo scopri dopo:
 - **Nessuna schermata per creare gli utenti "risorsa"** (la persona che compila solo le proprie
   ore): il ruolo esiste ed è funzionante, ma l'account va creato da phpMyAdmin.
 - **Nessun recupero password self-service.** Se un utente la dimentica, gliela reimposti tu da
-  phpMyAdmin generando un nuovo hash.
+  phpMyAdmin generando un nuovo hash. Ognuno può però cambiarsi la password da solo dall'icona 👤.
 
 Sono tutte cose aggiungibili in un secondo momento senza toccare l'impianto.
 
@@ -298,5 +307,4 @@ php -S 127.0.0.1:8000 -t public public/index.php
 ```
 
 SQLite serve solo allo sviluppo: la produzione usa MySQL, e le due migrazioni mantengono gli stessi
-vincoli. Per rigenerare i file di `deploy/sql/`:
-`php bin/make-deploy-sql.php --admin=tua@email.it`
+vincoli. Per rigenerare i file di `deploy/sql/`: `php bin/make-deploy-sql.php`

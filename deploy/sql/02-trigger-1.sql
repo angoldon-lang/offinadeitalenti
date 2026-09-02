@@ -1,5 +1,5 @@
 -- Officina dei Talenti — Passo 2.1: trigger trg_ts_immutable
--- Generato il 02/09/2026 09:52
+-- Generato il 02/09/2026 09:56
 -- Incolla in phpMyAdmin (scheda SQL) e premi Esegui.
 
 -- IMPORTANTE: incolla SOLO questo blocco, da solo, e premi Esegui.
